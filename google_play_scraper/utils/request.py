@@ -50,11 +50,14 @@ def _request(method: str, url: str, **kwargs) -> str:
             if "com.google.play.gateway.proto.PlayGatewayError" in response.text:
                 raise Exception("PlayGatewayError")
             return response.text
+        except NotFoundError as e:
+            # Just forward the not found exception for better logging
+            raise e
         except Exception as e:
             last_exception = e
             rate_exceeded_count += 1
             delay = RATE_LIMIT_DELAY * rate_exceeded_count + random.uniform(0.5, 1.5)
-            print(f"Retrying in {delay:.1f}s due to: {e}")
+            #print(f"Retrying in {delay:.1f}s due to: {e}")
             time.sleep(delay)
 
     raise last_exception
